@@ -14,21 +14,16 @@ console.log(config);
 const MONGO_URI = config.database;
 
 let db ;
-var urlMethod = function(req, res, next) {
-  console.log('Time :',Date.now());
-  next()
-};
 
 MongoClient.connect(MONGO_URI,{ useNewUrlParser: true })
   .then((database) => {
-    db = database.db('library');
+    db = database.db(config.db);
     console.log('connected mLab database');
   })
   .catch((err) => {
     console.log(err);
   })
 
-app.use('/test/read',urlMethod);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use( cors());
@@ -38,6 +33,9 @@ app.get('/test/read',(req, res) => {
   .find({"E Mail" : {$in : [/gmail.com/]}})
   .project({"First Name" : 1, "E Mail": 1, _id:0,"_id": 1})
   .toArray( (err, item) => {
+    if(err) {
+      res.send(err);
+    }
     res.send(item);
   });
 });
@@ -47,7 +45,7 @@ app.post('/test/create', (req, res) => {
   console.log(body);
   db.collection('users').insert(body, (err, response) => {
   if(err) {
-      res.status(404).send(err);
+      res.sendStatus(500);
   }
   res.send(response.ops);
   });
