@@ -5,7 +5,7 @@ const ObjectId = require('mongodb').ObjectID;
 const csvjson = require('csvjson');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const port = process.env.PORT || 8080
 const  app = express();
 
 const url = 'mongodb://navin27:navin2781@ds115592.mlab.com:15592/library';
@@ -27,7 +27,7 @@ MongoClient.connect(url,{ useNewUrlParser: true })
 app.use('/test/read',urlMethod);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
-//app.use( cors());
+app.use( cors());
 
 app.get('/test/read',(req, res) => {
   db.collection('users')
@@ -87,34 +87,9 @@ app.delete('/test/delete/:id', (req, res, next) => {
 });
 
 app.get('/', (req, res, next) => {
-    fs.readFile('sample.json', 'utf8', (err, data) => {
-        if(err) {
-          res.sendStatus(404);
-        }
-        else {
-          res.send({data});
-        }
-    });
-});
-app.get('/route/:id', (req,res,next) => {
-    if(req.params.id == 2) {
-      res.send('param 2');
-      next('route')
-    }
-    else {
-      next();
-    }
-}, (req, res, next ) => {
-    res.json("routing");
+      res.send('Welcome to Swagger Server');
 });
 
-app.get("/sequence", [(req, res, next) => {
-    fs.writeFile("data.json","data", next);
-  }, (req, res) => {
-    res.send("OK");
-  }
-]);
-
-app.listen(3000,() => {
-  console.log(`Listening to port 3000`);
+app.listen(port,() => {
+  console.log(`Listening to port ${port}`);
 });
