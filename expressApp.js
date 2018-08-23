@@ -5,17 +5,21 @@ const ObjectId = require('mongodb').ObjectID;
 const csvjson = require('csvjson');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const port = process.env.PORT || 8080
 const  app = express();
 
-const url = 'mongodb://navin27:navin2781@ds115592.mlab.com:15592/library';
+
+const port = process.env.PORT || 3000
+const config = require('./config.js').get(process.env.NODE_ENV);
+console.log(config);
+const MONGO_URI = config.database;
+
 let db ;
 var urlMethod = function(req, res, next) {
   console.log('Time :',Date.now());
   next()
 };
 
-MongoClient.connect(url,{ useNewUrlParser: true })
+MongoClient.connect(MONGO_URI,{ useNewUrlParser: true })
   .then((database) => {
     db = database.db('library');
     console.log('connected mLab database');
